@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+  <meta name="baidu-site-verification" content="zASw3GjPZA" />
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="iOS,调研,贝塞尔曲线,UIBezierPath,iOS进度条,UIView打孔,UIView透明孔洞," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="贝塞尔曲线原理及在iOS中使用介绍贝塞尔曲线是指可以通过一些控制点去控制曲线的形状并且保持曲线的平滑特性，不会让人感觉到突兀。在iOS开发中，贝塞尔曲线的使用主要通过UIKit中的UIBezierPath类，这个类可以使用贝塞尔曲线和直线实现一些复杂的图形结构。本文会介绍贝塞尔曲线的原理和使用UIBezierPath绘制贝塞尔曲线，文末会给两个使用UIBezierPath实现的Demo Index">
+<meta property="og:type" content="article">
+<meta property="og:title" content="贝塞尔曲线原理及在iOS中使用介绍">
+<meta property="og:url" content="http://yoursite.com/2020/02/14/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%20UIBezierPath/index.html">
+<meta property="og:site_name" content="曾维俊的博客">
+<meta property="og:description" content="贝塞尔曲线原理及在iOS中使用介绍贝塞尔曲线是指可以通过一些控制点去控制曲线的形状并且保持曲线的平滑特性，不会让人感觉到突兀。在iOS开发中，贝塞尔曲线的使用主要通过UIKit中的UIBezierPath类，这个类可以使用贝塞尔曲线和直线实现一些复杂的图形结构。本文会介绍贝塞尔曲线的原理和使用UIBezierPath绘制贝塞尔曲线，文末会给两个使用UIBezierPath实现的Demo Index">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200226232728.png">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200226232741.png">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200226232752.png">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200226232805.png">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bbzier_2_big.gif">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/2880px-Bezier_2_big.svg.png">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_3_big.svg.png">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_3_big.gif">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_1_big.gif">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_4_big.gif">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227120107.png">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227115037.png">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227122912.png">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227123035.png">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/progress.gif">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227160537.png">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227160935.png">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227181207.png">
+<meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227181317.png">
+<meta property="article:published_time" content="2020-02-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-02-27T10:41:33.268Z">
+<meta property="article:author" content="nius">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="调研">
+<meta property="article:tag" content="贝塞尔曲线">
+<meta property="article:tag" content="UIBezierPath">
+<meta property="article:tag" content="iOS进度条">
+<meta property="article:tag" content="UIView打孔">
+<meta property="article:tag" content="UIView透明孔洞">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200226232728.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/02/14/贝塞尔曲线 UIBezierPath/"/>
+
+
+
+
+
+  <title>贝塞尔曲线原理及在iOS中使用介绍 | 曾维俊的博客</title>
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?68377c9fdac56535e2b9ff551a9b9d8b";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">曾维俊的博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">路漫漫其修远兮，吾将上下而求索！</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/02/14/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%20UIBezierPath/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="nius">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/avatar.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="曾维俊的博客">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">贝塞尔曲线原理及在iOS中使用介绍</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-02-14T00:00:00+08:00">
+                2020-02-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS%E5%BC%80%E5%8F%91/" itemprop="url" rel="index">
+                    <span itemprop="name">iOS开发</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/iOS%E5%BC%80%E5%8F%91/UI/" itemprop="url" rel="index">
+                    <span itemprop="name">UI</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/02/14/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%20UIBezierPath/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/02/14/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF%20UIBezierPath/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="贝塞尔曲线原理及在iOS中使用介绍"><a href="#贝塞尔曲线原理及在iOS中使用介绍" class="headerlink" title="贝塞尔曲线原理及在iOS中使用介绍"></a>贝塞尔曲线原理及在iOS中使用介绍</h2><p>贝塞尔曲线是指可以通过一些控制点去控制曲线的形状并且保持曲线的平滑特性，不会让人感觉到突兀。在iOS开发中，贝塞尔曲线的使用主要通过UIKit中的UIBezierPath类，这个类可以使用贝塞尔曲线和直线实现一些复杂的图形结构。本文会介绍贝塞尔曲线的原理和使用UIBezierPath绘制贝塞尔曲线，文末会给两个使用UIBezierPath实现的Demo</p>
+<p>Index<br><a href="#intro">贝塞尔曲线简介</a><br><a style="padding-left: 30px;" href="#history">历史沿革</a><br><a style="padding-left: 30px;" href="#math">数学推理</a><br><a style="padding-left: 30px;" href="#N">N次贝塞尔曲线</a><br><a href="#UIBezierPath">UIBezierPath</a><br><a style="padding-left: 30px;" href="#two-bezier">二次贝塞尔曲线Demo</a><br><a style="padding-left: 30px;" href="#three-bezier">三次贝塞尔曲线Demo</a><br><a href="#progress">进度指示器</a><br><a href="#alphaView">UIView透明孔洞</a></p>
+<h3 id="贝塞尔曲线简介"><a href="#贝塞尔曲线简介" class="headerlink" title="贝塞尔曲线简介"></a><a name="intro" style="color:#000000;">贝塞尔曲线简介</a></h3><p><a name="history"><font face="黑体" size=4 color=#0099ff>历史沿革</font></a>  贝塞尔曲线(Bézier curve)又称曲线或贝济埃曲线，是计算机图形学中相当重要的参数曲线，它包含了大量的数学证明几何推理，经过近半个世纪发展之后，终于在1962年于经就职于雷诺的法国工程师皮埃尔·贝塞尔（Pierre Bézier）在汽车车体工业设计中的成功实践后广泛宣传推广，之后被大家称之为贝塞尔曲线，贝塞尔可以说是理论联系实际的践行者。当然，贝塞尔曲线最初是由Paul de Casteljau于1959年运用de Casteljau算法开发，以稳定数值的方法求出贝兹曲线。</p>
+<p>贝塞尔曲线的一个简的定义即：<strong>通过某些控制点，去生成的复杂平滑曲线</strong></p>
+<p><a name="math"><font face="黑体" size=4 color=#0099ff>数学依据</font></a>  没有复杂的数学公式，毕竟我们不做数学研究(^o^)/~，这里只列举了一下几何推导过程。</p>
+<p>①首先想象有两条直线AB、BC相交于B点，AB、BC长度不做限定</p>
+<img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200226232728.png" style="zoom:50%;" />
+
+<p>②分别在两条直线上任取一个点D、F，满足条件AD/AB = BF/BC</p>
+<img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200226232741.png" style="zoom:50%;" />
+
+<p>③在DF上任取一点G，满足满足条件DG/DF = AD/AB = BF/BC</p>
+<img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200226232752.png" style="zoom:50%;" />
+
+<p>④从A到C画一条曲线（也可以反过来），以B为控制点，则刚刚的G点一定处于A到C点的贝塞尔曲线之上。不断变化DF位置，递归刚才的过程①-③的步骤，尝试完所有点并连接起来，我们可以得到如下一条平滑的曲线，此曲线即为贝塞尔曲线</p>
+<img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200226232805.png" style="zoom:50%;" />
+
+
+
+<p>如果将整个递推过程行测GIF动画，将会是如下效果</p>
+<img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bbzier_2_big.gif" alt=" " style="zoom:100%;" />
+
+<p>如果不易理解，我们将GIF动画停止到某帧(25)的时候停一下，可得到如下图，此时下图如同我们第④个步骤中结果图，它同样满足条件 <strong>Q</strong><sub>0 </sub><strong>B</strong> / <strong>Q</strong><sub>0 </sub><strong>Q</strong><sub>1</sub>   =   <strong>P</strong><sub>0</sub><strong>Q</strong><sub>0</sub> / <strong>P</strong><sub>0</sub><strong>P</strong><sub>1</sub>  =  <strong>P</strong><sub>1</sub><strong>Q</strong><sub>1</sub>/<strong>P</strong><sub>1</sub><strong>P</strong><sub>2</sub> </p>
+<img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/2880px-Bezier_2_big.svg.png" style="zoom:15%;" />
+
+<p><a name="N"><font face="黑体" size=4 color=#0099ff>N次贝塞尔曲线</font></a>   在上述在贝塞尔曲线中，将<strong>P</strong><sub>1</sub>称为控制点，而<strong>P</strong><sub>0</sub>和<strong>P</strong><sub>2</sub>称为起点和终点，由此可以推出，起点终点位置不变的情况下，调整<strong>P</strong><sub>1</sub>的位置将导致曲线形状发生变化，这也是称<strong>P</strong><sub>1</sub>为控制点的由来。如上一个控制点的曲线我们称之为二次贝塞尔曲线。当然，该过程可以拓展至N次，使用迭代即可完成，如下图情况是三次贝塞尔曲线</p>
+<div style="float:mid;border:solid 1px 000;margin:20px;"><img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_3_big.svg.png" style="zoom:8%;"> <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_3_big.gif" style="zoom:70%;"> </div>
+
+<p>控制点为0（没有控制点）的曲线也就是一条直线，下图是一次贝塞尔和四次贝塞尔的动画示例</p>
+<div style="float:left;border:solid 1px 000;margin:2px;"><img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_1_big.gif" style="zoom:70%;"> <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_4_big.gif" style="zoom:70%;"> </div>
+
+
+
+
+
+
+
+
+
+
+
+
+<h3 id="UIBezierPath"><a href="#UIBezierPath" class="headerlink" title="UIBezierPath"></a><a name="UIBezierPath" style="color:#000000;">UIBezierPath</a></h3><p>UIBezierPath提供了实现二次和三次贝塞尔曲线的方法，同时该类还提供了绘制矩形、圆弧以及椭圆等其它功能，我们可以通过它实现某些UIKit不能提供的多边形图层，实现一些曲线动画等。由于绘制图形需要一个上下文环境，通常可以放到自定义UIView的<code>draw(_ rect: CGRect)</code>中或者CALayer的<code>draw(in ctx: CGContext)</code>，这两个方法中系统已经自动配置了绘图环境。<em>如果不做任何操作，建议不要保留空方法，会导致无意义的性能开销，因为系统要配置绘图上下文环境。</em></p>
+<blockquote>
+<p><font face="黑体" size=3 color=#86b300>绘图上下文</font>  可以理解为一块画布图层，一个应用中可能有多个上下文环境即多块画布，存在一个画布图层栈stack中维护，通常使用<code>UIGraphicsGetCurrentContext()</code>即可取得。在UIView的<code>draw(_ rect: CGRect)</code>方法中UIKit其实已经为我们维护好了一个context，无需我们创建既可以在这里绘制图形。而如果我们需要在某个地方临时时使用也可以自己创建，例如可以通过如下方法绘制一张图片</p>
+<blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;UIGraphicsBeginImageContext(CGSizeMake(<span class="number">100</span>, <span class="number">100</span>)); <span class="comment">// 创建一块位图画布,会设置为当前context</span></span><br><span class="line">&gt;CGContextRef ctx = UIGraphicsGetCurrentContext();  <span class="comment">// 获取当前画布</span></span><br><span class="line">&gt;<span class="comment">// draw in here...</span></span><br><span class="line">&gt;<span class="comment">// 这里默认ctx就是当前的绘制上下文</span></span><br><span class="line">&gt;UIImage *<span class="built_in">image</span> = UIGraphicsGetImageFromCurrentImageContext(); <span class="comment">// 取得图片</span></span><br><span class="line">&gt;UIGraphicsEndImageContext(); <span class="comment">// 销毁画布</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<p><font face="黑体" size=3 color=#86b300>上下文状态栈</font>  在一块画布上画图可能有多种状态，比如使用的笔的颜色、粗细等，画出的线应该是虚线、实线又或者其他特性等等，这些笔或者线等的状态需要记录，也就记录在我们的图形上下文环境中，这个环境中有一个状态栈stack专门用来保存当前状态，<font face="黑体" size=3 color=#ff6600>栈顶中保存的状态即为当前状态(当前绘制使用的状态)，亦可称为当前状态</font>。</p>
+</blockquote>
+<p><strong><a name="CAShapeLayer"><font face="黑体" size=4 color=#two-bezier>二次贝塞尔曲线Demo</font></a></strong>  自定义UIView，并覆盖<code>draw(_ rect: CGRect)</code>，使用UIBezierPath绘制的二次贝塞尔曲线，如下面左边图例，右图是对应的原理图。</p>
+<div>
+  <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227120107.png" style="zoom:70%;" />
+      ==>  
+  <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227115037.png" style="zoom:40%;" />
+</div>
+
+<p>由于现在所处的的是UIKit配置好的context环境下，所以设置颜色、线宽以及路劲形状等代码只要在绘制提交(stroke方法调用)之前即可。</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">draw</span><span class="params">(<span class="number">_</span> rect: CGRect)</span></span> &#123;</span><br><span class="line">    <span class="type">UIColor</span>.green.<span class="keyword">set</span>() <span class="comment">// 设置颜色</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> path = <span class="type">UIBezierPath</span>() </span><br><span class="line">    path.lineWidth = <span class="number">5</span> <span class="comment">// 线宽</span></span><br><span class="line">    path.move(to: <span class="type">CGPoint</span>(x: <span class="number">100</span>, y: <span class="number">200</span>)) <span class="comment">// 起点</span></span><br><span class="line">	  <span class="comment">// 设置终点和控制点</span></span><br><span class="line">    path.addQuadCurve(to: <span class="type">CGPoint</span>(x: <span class="number">300</span>, y: <span class="number">200</span>), controlPoint: <span class="type">CGPoint</span>(x: <span class="number">100</span>, y: <span class="number">0</span>)) </span><br><span class="line">  	<span class="comment">// 绘制路径</span></span><br><span class="line">    path.stroke()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p><font face="黑体" size=4 color=#86b300>CAShapeLayer绘制图形</font> 除了上述使用<code>draw(_ rect: CGRect)</code>方法绘制外，我们还可以将路径计算完成后赋值给CAShapeLayer的属性，让CAShapeLayer去执行绘制过程。由于<code>draw(_ rect: CGRect)</code>方法中绘制由CPU计算处理，而CALayer的属性是由GPU计算处理，因此使用CAShapeLayer方式会加快绘制速度，不过也要是CPU个GPU整体负载情况均衡拿捏，通常可能触发离屏渲染的操作(比如同时设置cornerRadius和maskToBounds)更推荐使用CPU提前处理，然后再交给GPU。</p>
+<p><a name="three-bezier"><font face="黑体" size=4 color=#0099ff>三次贝塞尔曲线Demo</font></a> 如果使用CAShapeLayer绘制贝塞尔曲线，则无需自定义View。使用UIBezierPath绘制的三次贝塞尔曲线，如下面左边图例，右图是对应的原理图。</p>
+<div>
+  <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227122912.png" style="zoom:50%;" />
+      ==>  
+  <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227123035.png" style="zoom:40%;" />
+</div>
+
+
+
+
+
+
+
+<h3 id="使用UIBezierPath实现一个进度指示器"><a href="#使用UIBezierPath实现一个进度指示器" class="headerlink" title="使用UIBezierPath实现一个进度指示器"></a><a name="progress" style="color:#000000;">使用UIBezierPath实现一个进度指示器</a></h3><div> 
+  <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/progress.gif" style="zoom:100%;">
+</div>
+
+<p>实现这个指示器主要考虑几点：圆心、半径，开始角度、终点角度。使用UIBezierPath绘扇形，绘制扇形只需要<code>一个圆弧</code>+<code>一条圆心到终点的直线</code>+<code>填充模式</code>即可。该案例完整的代码如下：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ProgressLayerView</span>: <span class="title">UIView</span> </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> progress: <span class="type">CGFloat</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">draw</span><span class="params">(<span class="number">_</span> rect: CGRect)</span></span> &#123;</span><br><span class="line">        <span class="keyword">let</span> pathRadius = bounds.size.width / <span class="number">2</span> - <span class="number">10</span></span><br><span class="line">        <span class="keyword">let</span> arcCenter = <span class="type">CGPoint</span>(x: bounds.size.width * <span class="number">0.5</span>, y: bounds.size.height * <span class="number">0.5</span>)</span><br><span class="line">        <span class="keyword">let</span> startAngle: <span class="type">CGFloat</span> = <span class="type">CGFloat</span>(-<span class="type">Double</span>.pi * <span class="number">0.5</span>)</span><br><span class="line">        <span class="keyword">let</span> endAngle: <span class="type">CGFloat</span> = <span class="type">CGFloat</span>(<span class="type">Double</span>.pi * <span class="number">2</span>) * progress + startAngle</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">let</span> placeholderPath = <span class="type">UIBezierPath</span>(arcCenter: arcCenter, radius: pathRadius, startAngle: <span class="number">0</span>, endAngle: <span class="type">CGFloat</span>(<span class="type">Double</span>.pi * <span class="number">2</span>), clockwise: <span class="literal">true</span>)</span><br><span class="line">        <span class="type">UIColor</span>.gray.<span class="keyword">set</span>()</span><br><span class="line">        placeholderPath.fill()</span><br><span class="line">        </span><br><span class="line">      	<span class="comment">// 扇形</span></span><br><span class="line">        <span class="keyword">let</span> path = <span class="type">UIBezierPath</span>(arcCenter: arcCenter, radius: pathRadius, startAngle: startAngle, endAngle: endAngle, clockwise: <span class="literal">true</span>)</span><br><span class="line">      	<span class="comment">// 圆心到终点的直线</span></span><br><span class="line">        path.addLine(to: arcCenter)</span><br><span class="line">        <span class="type">UIColor</span>.white.<span class="keyword">set</span>()</span><br><span class="line">	      <span class="comment">// 填充模式绘图</span></span><br><span class="line">        path.fill()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">override</span> <span class="keyword">init</span>(frame: <span class="type">CGRect</span>) &#123;</span><br><span class="line">        progress = <span class="number">0.01</span></span><br><span class="line">        <span class="keyword">super</span>.<span class="keyword">init</span>(frame: frame)</span><br><span class="line">        backgroundColor = <span class="type">UIColor</span>.black.withAlphaComponent(<span class="number">0.8</span>)</span><br><span class="line">        layer.cornerRadius = <span class="number">5</span></span><br><span class="line">        layer.masksToBounds = <span class="literal">true</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">// For test</span></span><br><span class="line">        refreshProgress()</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">func</span> <span class="title">refreshProgress</span><span class="params">()</span></span> &#123;</span><br><span class="line">        progress += <span class="number">0.01</span></span><br><span class="line">        setNeedsDisplay()</span><br><span class="line">        <span class="keyword">if</span> progress &gt;= <span class="number">1.0</span> &#123;</span><br><span class="line">            progress = <span class="number">0.0</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">DispatchQueue</span>.main.asyncAfter(deadline: <span class="type">DispatchTime</span>.now().advanced(by: .milliseconds(<span class="number">100</span>))) &#123;</span><br><span class="line">            <span class="keyword">self</span>.refreshProgress()</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">required</span> <span class="keyword">init</span>?(coder: <span class="type">NSCoder</span>) &#123;</span><br><span class="line">        <span class="built_in">fatalError</span>(<span class="string">"init(coder:) has not been implemented"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h3 id="UIView实现透明孔洞"><a href="#UIView实现透明孔洞" class="headerlink" title="UIView实现透明孔洞"></a><a name="alphaView" style="color:#000000;">UIView实现透明孔洞</a></h3><p>下面是实现效果图，右图红线是UIBezierPath路径，箭头表示路径方向，通常情况下路径方向没有什么作用，不过在做路劲绘制动画或者实现以下这种透明孔洞时显得很有用，只需要控制一下填充规则就可以实现这种效果。</p>
+<div>
+    <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227160537.png" style="zoom:50%;" />
+  ==>
+    <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227160935.png" style="zoom:50%;" />
+</div>
+
+<p><font face="黑体" size=3 color=#86b300>填充规则</font>  CAShapeLayer有一个成员<code>fullRule</code>指定填充规则，只适用哪一种算法判断画布上的某一个区域是否属于该图形路径的<font face="黑体" size=3 color=#ff6600>内部</font>，对一个没有交叉的线框如矩形，要判断哪块区域是<font face="黑体" size=3 color=#ff6600>内部</font>比较直观。但对于一个复查交叉路径(比如自交或包含路径关系)就不太明确了，此时就需要一定的规则才行</p>
+<p><code>fullRule</code> 有两个值，<code>nonZero：非零</code> 和 <code>evenOdd：奇偶</code></p>
+<blockquote>
+<p>*<font face="黑体" size=3 color=#86b300>非零</font>  按该规则，要判断一个点是否在图形内，从该点作任意方向的一条射线，然后检测射线与图形路径的交点情况。从0开始计数，路径从左向右穿过射线则计数加1，从右向左穿过射线则计数减1。得出计数结果后，如果结果是0，则认为点在图形外部，否则认为在内部。如下图示例：*</p>
+<img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227181207.png" style="zoom:30%;" />
+
+<p>*<font face="黑体" size=3 color=#86b300>奇偶</font>  按该规则，要判断一个点是否在图形内，从该点作任意方向的一条射线，然后检测射线与图形路径的交点的数量。如果结果是奇数则认为点在内部，是偶数则认为点在外部。如下图示例：*</p>
+<img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227181317.png" style="zoom:30%;" />
+</blockquote>
+<p>明确以上规则后，就容易控制图层某些地方区域透明和不透明。由于该成员默认值是<code>nonZero：非零</code>，除了通过修改fullRule的值为<code>evenOdd：奇偶</code>实现中心透明外，还可以使用UIBezierPath的<code>reversing()</code>方法改变路径曲线的默认方向来到达到相同的效果。该案例的完整代码如下：</p>
+<p>完整代码如下：</p>
+<figure class="highlight swift"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@IBOutlet</span> <span class="keyword">weak</span> <span class="keyword">var</span> imageView: <span class="type">UIImageView!</span></span><br><span class="line"><span class="keyword">override</span> <span class="function"><span class="keyword">func</span> <span class="title">viewDidLoad</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">super</span>.viewDidLoad()</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 背景图片</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">let</span> path = <span class="type">Bundle</span>.main.path(forResource: <span class="string">"1404103479048.jpg"</span>, ofType: <span class="literal">nil</span>) &#123;</span><br><span class="line">        <span class="keyword">let</span> image = <span class="type">UIImage</span>(contentsOfFile: path)</span><br><span class="line">        imageView.image = image</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 覆盖图层</span></span><br><span class="line">    <span class="keyword">let</span> maskView = <span class="type">UIView</span>(frame: <span class="keyword">self</span>.view.bounds)</span><br><span class="line">    maskView.backgroundColor = <span class="type">UIColor</span>.black.withAlphaComponent(<span class="number">0.8</span>)</span><br><span class="line">    view.addSubview(maskView)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 孔洞位置（alpha透明的位置）</span></span><br><span class="line">    <span class="keyword">let</span> width: <span class="type">CGFloat</span> = <span class="number">300</span></span><br><span class="line">    <span class="keyword">let</span> height: <span class="type">CGFloat</span> = width</span><br><span class="line">    <span class="keyword">let</span> cornerRadius: <span class="type">CGFloat</span> = width * <span class="number">0.5</span></span><br><span class="line">    <span class="keyword">let</span> pathRect = <span class="type">CGRect</span>(x: (maskView.bounds.size.width - width)/<span class="number">2</span>,</span><br><span class="line">                          y: (maskView.bounds.size.height - height)/<span class="number">2</span> - <span class="number">100</span>,</span><br><span class="line">                          width: width,</span><br><span class="line">                          height: height)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 先创建一个路径放和原来的覆盖图层maskView一样大</span></span><br><span class="line">    <span class="keyword">let</span> path = <span class="type">UIBezierPath</span>(roundedRect: maskView.frame, cornerRadius: <span class="number">0</span>)</span><br><span class="line">    <span class="comment">// 然后再创建一个路径时需要alpha透明的位置</span></span><br><span class="line">    path.append(<span class="type">UIBezierPath</span>(roundedRect: pathRect, cornerRadius: cornerRadius))</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建shapeLayer，并将path给到shapeLayer</span></span><br><span class="line">    <span class="keyword">let</span> shapeLayer = <span class="type">CAShapeLayer</span>()</span><br><span class="line">    shapeLayer.path = path.cgPath</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置填充规则</span></span><br><span class="line">    shapeLayer.fillRule = .evenOdd</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将shapeLayer赋值给maskView.layer.mask</span></span><br><span class="line">    <span class="comment">// 这个mask是求两个layer（shapeLayer和maskView.layer）的交集</span></span><br><span class="line">    <span class="comment">// 这个交集可以理解为面积交集</span></span><br><span class="line">    maskView.layer.mask = shapeLayer</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p><strong>参考资料</strong></p>
+<p><em><a href="https://zh.wikipedia.org/wiki/貝茲曲線" target="_blank" rel="noopener">维基百科</a></em><br><em><a href="https://baike.baidu.com/item/贝塞尔曲线" target="_blank" rel="noopener">百度百科</a></em><br><em><a href="https://www.jianshu.com/p/13a28228f25f" target="_blank" rel="noopener">GPU vs CPU in iOS</a></em><br><em><a href="https://www.jianshu.com/p/0cfd271fc6db" target="_blank" rel="noopener">iOS 图形绘制框架</a></em><br><em><a href="https://www.jianshu.com/p/0c9b4b681724" target="_blank" rel="noopener">必须要理解掌握的贝塞尔曲线（原创）</a></em><br><em><a href="https://www.jianshu.com/p/c883fbf52681" target="_blank" rel="noopener">iOS UIBezierPath贝塞尔曲线常用方法</a></em><br><em><a href="https://www.jianshu.com/p/d8f060c21056" target="_blank" rel="noopener">iOS 利用CAShapeLayer的FillRule属性生成一个空心遮罩的layer</a></em></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/iOS/" rel="tag"># iOS</a>
+          
+            <a href="/tags/%E8%B0%83%E7%A0%94/" rel="tag"># 调研</a>
+          
+            <a href="/tags/%E8%B4%9D%E5%A1%9E%E5%B0%94%E6%9B%B2%E7%BA%BF/" rel="tag"># 贝塞尔曲线</a>
+          
+            <a href="/tags/UIBezierPath/" rel="tag"># UIBezierPath</a>
+          
+            <a href="/tags/iOS%E8%BF%9B%E5%BA%A6%E6%9D%A1/" rel="tag"># iOS进度条</a>
+          
+            <a href="/tags/UIView%E6%89%93%E5%AD%94/" rel="tag"># UIView打孔</a>
+          
+            <a href="/tags/UIView%E9%80%8F%E6%98%8E%E5%AD%94%E6%B4%9E/" rel="tag"># UIView透明孔洞</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/02/13/hello-world/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/02/14/hexo-use/" rel="prev" title="如何使用Hexo+github搭建博客站">
+                如何使用Hexo+github搭建博客站 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/avatar.jpeg"
+                alt="nius" />
+            
+              <p class="site-author-name" itemprop="name">nius</p>
+              <p class="site-description motion-element" itemprop="description">A loser, or not.</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/zengweijun" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-github"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/d8ab62002fe9" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-link"></i>简书</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#贝塞尔曲线原理及在iOS中使用介绍"><span class="nav-number">1.</span> <span class="nav-text">贝塞尔曲线原理及在iOS中使用介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#贝塞尔曲线简介"><span class="nav-number">1.1.</span> <span class="nav-text">贝塞尔曲线简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UIBezierPath"><span class="nav-number">1.2.</span> <span class="nav-text">UIBezierPath</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用UIBezierPath实现一个进度指示器"><span class="nav-number">1.3.</span> <span class="nav-text">使用UIBezierPath实现一个进度指示器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UIView实现透明孔洞"><span class="nav-number">1.4.</span> <span class="nav-text">UIView实现透明孔洞</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">nius</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'wBRl1pbRkdYYLxN4iRrfDT6h-gzGzoHsz',
+        appKey: '3Hv5gfmWF6bs0mfgclJ51Ecb',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
