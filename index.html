@@ -387,7 +387,7 @@
       
         
           
-            <h2 id="贝塞尔曲线原理及在iOS中使用介绍"><a href="#贝塞尔曲线原理及在iOS中使用介绍" class="headerlink" title="贝塞尔曲线原理及在iOS中使用介绍"></a>贝塞尔曲线原理及在iOS中使用介绍</h2><p>贝塞尔曲线是指可以通过一些控制点去控制曲线的形状并且保持曲线的平滑特性，不会让人感觉到突兀。在iOS开发中，贝塞尔曲线的使用主要通过UIKit中的UIBezierPath类，这个类可以使用贝塞尔曲线和直线实现一些复杂的图形结构。本文会介绍贝塞尔曲线的原理和使用UIBezierPath绘制贝塞尔曲线，文末会给两个使用UIBezierPath实现的Demo</p>
+            <p>贝塞尔曲线是指可以通过一些控制点去控制曲线的形状并且保持曲线的平滑特性，不会让人感觉到突兀。在iOS开发中，贝塞尔曲线的使用主要通过UIKit中的UIBezierPath类，这个类可以使用贝塞尔曲线和直线实现一些复杂的图形结构。本文会介绍贝塞尔曲线的原理和使用UIBezierPath绘制贝塞尔曲线，文末会给两个使用UIBezierPath实现的Demo</p>
 <p>Index<br><a href="#intro">贝塞尔曲线简介</a><br><a style="padding-left: 30px;" href="#history">历史沿革</a><br><a style="padding-left: 30px;" href="#math">数学推理</a><br><a style="padding-left: 30px;" href="#N">N次贝塞尔曲线</a><br><a href="#UIBezierPath">UIBezierPath</a><br><a style="padding-left: 30px;" href="#two-bezier">二次贝塞尔曲线Demo</a><br><a style="padding-left: 30px;" href="#three-bezier">三次贝塞尔曲线Demo</a><br><a href="#progress">进度指示器</a><br><a href="#alphaView">UIView透明孔洞</a></p>
 <h3 id="贝塞尔曲线简介"><a href="#贝塞尔曲线简介" class="headerlink" title="贝塞尔曲线简介"></a><a name="intro" style="color:#000000;">贝塞尔曲线简介</a></h3><p><a name="history"><font face="黑体" size=4 color=#0099ff>历史沿革</font></a>  贝塞尔曲线(Bézier curve)又称曲线或贝济埃曲线，是计算机图形学中相当重要的参数曲线，它包含了大量的数学证明几何推理，经过近半个世纪发展之后，终于在1962年于经就职于雷诺的法国工程师皮埃尔·贝塞尔（Pierre Bézier）在汽车车体工业设计中的成功实践后广泛宣传推广，之后被大家称之为贝塞尔曲线，贝塞尔可以说是理论联系实际的践行者。当然，贝塞尔曲线最初是由Paul de Casteljau于1959年运用de Casteljau算法开发，以稳定数值的方法求出贝兹曲线。</p>
 <p>贝塞尔曲线的一个简的定义即：<strong>通过某些控制点，去生成的复杂平滑曲线</strong></p>
