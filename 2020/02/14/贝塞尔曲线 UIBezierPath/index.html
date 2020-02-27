@@ -107,7 +107,7 @@
 <meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227181207.png">
 <meta property="og:image" content="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227181317.png">
 <meta property="article:published_time" content="2020-02-13T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-02-27T11:02:51.543Z">
+<meta property="article:modified_time" content="2020-02-27T11:37:25.174Z">
 <meta property="article:author" content="nius">
 <meta property="article:tag" content="iOS">
 <meta property="article:tag" content="调研">
@@ -411,8 +411,8 @@
 
       
         <p>贝塞尔曲线是指可以通过一些控制点去控制曲线的形状并且保持曲线的平滑特性，不会让人感觉到突兀。在iOS开发中，贝塞尔曲线的使用主要通过UIKit中的UIBezierPath类，这个类可以使用贝塞尔曲线和直线实现一些复杂的图形结构。本文会介绍贝塞尔曲线的原理和使用UIBezierPath绘制贝塞尔曲线，文末会给两个使用UIBezierPath实现的Demo</p>
-<p>Index<br><a href="#intro">贝塞尔曲线简介</a><br><a style="padding-left: 30px;" href="#history">历史沿革</a><br><a style="padding-left: 30px;" href="#math">数学推理</a><br><a style="padding-left: 30px;" href="#N">N次贝塞尔曲线</a><br><a href="#UIBezierPath">UIBezierPath</a><br><a style="padding-left: 30px;" href="#two-bezier">二次贝塞尔曲线Demo</a><br><a style="padding-left: 30px;" href="#three-bezier">三次贝塞尔曲线Demo</a><br><a href="#progress">进度指示器</a><br><a href="#alphaView">UIView透明孔洞</a></p>
-<h3 id="贝塞尔曲线简介"><a href="#贝塞尔曲线简介" class="headerlink" title="贝塞尔曲线简介"></a><a name="intro" style="color:#000000;">贝塞尔曲线简介</a></h3><p><a name="history"><font face="黑体" size=4 color=#0099ff>历史沿革</font></a>  贝塞尔曲线(Bézier curve)又称曲线或贝济埃曲线，是计算机图形学中相当重要的参数曲线，它包含了大量的数学证明几何推理，经过近半个世纪发展之后，终于在1962年于经就职于雷诺的法国工程师皮埃尔·贝塞尔（Pierre Bézier）在汽车车体工业设计中的成功实践后广泛宣传推广，之后被大家称之为贝塞尔曲线，贝塞尔可以说是理论联系实际的践行者。当然，贝塞尔曲线最初是由Paul de Casteljau于1959年运用de Casteljau算法开发，以稳定数值的方法求出贝兹曲线。</p>
+<p><font face="黑体" size=5 color=#0088aa>Index</font><br><a href="#intro"><font face="黑体" size=3 color=#0088aa>贝塞尔曲线简介</font></a><br><a style="padding-left: 30px;" href="#history"><font face="黑体" size=3 color=#0088aa>历史沿革</font></a><br><a style="padding-left: 30px;" href="#math"><font face="黑体" size=3 color=#0088aa>数学推理</font></a><br><a style="padding-left: 30px;" href="#N"><font face="黑体" size=3 color=#0088aa>N次贝塞尔曲线</font></a><br><a href="#UIBezierPath"><font face="黑体" size=3 color=#0088aa>UIBezierPath</font></a><br><a style="padding-left: 30px;" href="#two-bezier"><font face="黑体" size=3 color=#0088aa>二次贝塞尔曲线Demo</font></a><br><a style="padding-left: 30px;" href="#three-bezier"><font face="黑体" size=3 color=#0088aa>三次贝塞尔曲线Demo</font></a><br><a href="#progress"><font face="黑体" size=3 color=#0088aa>进度指示器</font></a><br><a href="#alphaView"><font face="黑体" size=3 color=#0088aa>UIView透明孔洞</font></a></p>
+<h3 id="贝塞尔曲线简介"><a href="#贝塞尔曲线简介" class="headerlink" title="贝塞尔曲线简介"></a><a name="UIBezierPath" style="color:#000000;">贝塞尔曲线简介</a></h3><p><a name="history"><font face="黑体" size=4 color=#0099ff>历史沿革</font></a>  贝塞尔曲线(Bézier curve)又称曲线或贝济埃曲线，是计算机图形学中相当重要的参数曲线，它包含了大量的数学证明几何推理，经过近半个世纪发展之后，终于在1962年于经就职于雷诺的法国工程师皮埃尔·贝塞尔（Pierre Bézier）在汽车车体工业设计中的成功实践后广泛宣传推广，之后被大家称之为贝塞尔曲线，贝塞尔可以说是理论联系实际的践行者。当然，贝塞尔曲线最初是由Paul de Casteljau于1959年运用de Casteljau算法开发，以稳定数值的方法求出贝兹曲线。</p>
 <p>贝塞尔曲线的一个简的定义即：<strong>通过某些控制点，去生成的复杂平滑曲线</strong></p>
 <p><a name="math"><font face="黑体" size=4 color=#0099ff>数学依据</font></a>  没有复杂的数学公式，毕竟我们不做数学研究(^o^)/~，这里只列举了一下几何推导过程。</p>
 <p>①首先想象有两条直线AB、BC相交于B点，AB、BC长度不做限定</p>
@@ -436,10 +436,16 @@
 <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/2880px-Bezier_2_big.svg.png" style="zoom:15%;" />
 
 <p><a name="N"><font face="黑体" size=4 color=#0099ff>N次贝塞尔曲线</font></a>   在上述在贝塞尔曲线中，将<strong>P</strong><sub>1</sub>称为控制点，而<strong>P</strong><sub>0</sub>和<strong>P</strong><sub>2</sub>称为起点和终点，由此可以推出，起点终点位置不变的情况下，调整<strong>P</strong><sub>1</sub>的位置将导致曲线形状发生变化，这也是称<strong>P</strong><sub>1</sub>为控制点的由来。如上一个控制点的曲线我们称之为二次贝塞尔曲线。当然，该过程可以拓展至N次，使用迭代即可完成，如下图情况是三次贝塞尔曲线</p>
-<div style="float:mid;border:solid 1px 000;margin:20px;"><img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_3_big.svg.png" style="zoom:8%;"> <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_3_big.gif" style="zoom:70%;"> </div>
+<div>
+  <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_3_big.svg.png" style="zoom:8%;">
+  <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_3_big.gif" style="zoom:70%;">
+</div>
 
 <p>控制点为0（没有控制点）的曲线也就是一条直线，下图是一次贝塞尔和四次贝塞尔的动画示例</p>
-<div style="float:left;border:solid 1px 000;margin:2px;"><img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_1_big.gif" style="zoom:70%;"> <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_4_big.gif" style="zoom:70%;"> </div>
+<div>
+  <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_1_big.gif" style="zoom:70%;">
+  <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/Bezier_4_big.gif" style="zoom:70%;">
+</div>
 
 
 
@@ -460,10 +466,9 @@
 </blockquote>
 <p><font face="黑体" size=3 color=#86b300>上下文状态栈</font>  在一块画布上画图可能有多种状态，比如使用的笔的颜色、粗细等，画出的线应该是虚线、实线又或者其他特性等等，这些笔或者线等的状态需要记录，也就记录在我们的图形上下文环境中，这个环境中有一个状态栈stack专门用来保存当前状态，<font face="黑体" size=3 color=#ff6600>栈顶中保存的状态即为当前状态(当前绘制使用的状态)，亦可称为当前状态</font>。</p>
 </blockquote>
-<p><strong><a name="CAShapeLayer"><font face="黑体" size=4 color=#two-bezier>二次贝塞尔曲线Demo</font></a></strong>  自定义UIView，并覆盖<code>draw(_ rect: CGRect)</code>，使用UIBezierPath绘制的二次贝塞尔曲线，如下面左边图例，右图是对应的原理图。</p>
+<p><strong><a name="CAShapeLayer"><font face="黑体" size=4 color=#two-bezier>二次贝塞尔曲线Demo</font></a></strong>  自定义UIView，并覆盖<code>draw(_ rect: CGRect)</code>，使用UIBezierPath绘制的二次贝塞尔曲线，如下面图例和对应的原理图。</p>
 <div>
   <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227120107.png" style="zoom:70%;" />
-      ==>  
   <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227115037.png" style="zoom:40%;" />
 </div>
 
@@ -475,10 +480,9 @@
 
 
 <p><font face="黑体" size=4 color=#86b300>CAShapeLayer绘制图形</font> 除了上述使用<code>draw(_ rect: CGRect)</code>方法绘制外，我们还可以将路径计算完成后赋值给CAShapeLayer的属性，让CAShapeLayer去执行绘制过程。由于<code>draw(_ rect: CGRect)</code>方法中绘制由CPU计算处理，而CALayer的属性是由GPU计算处理，因此使用CAShapeLayer方式会加快绘制速度，不过也要是CPU个GPU整体负载情况均衡拿捏，通常可能触发离屏渲染的操作(比如同时设置cornerRadius和maskToBounds)更推荐使用CPU提前处理，然后再交给GPU。</p>
-<p><a name="three-bezier"><font face="黑体" size=4 color=#0099ff>三次贝塞尔曲线Demo</font></a> 如果使用CAShapeLayer绘制贝塞尔曲线，则无需自定义View。使用UIBezierPath绘制的三次贝塞尔曲线，如下面左边图例，右图是对应的原理图。</p>
+<p><a name="three-bezier"><font face="黑体" size=4 color=#0099ff>三次贝塞尔曲线Demo</font></a> 如果使用CAShapeLayer绘制贝塞尔曲线，则无需自定义View。使用UIBezierPath绘制的三次贝塞尔曲线，如下面图例和对应的原理图。</p>
 <div>
   <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227122912.png" style="zoom:50%;" />
-      ==>  
   <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227123035.png" style="zoom:40%;" />
 </div>
 
@@ -501,12 +505,12 @@
 
 
 
-<h3 id="UIView实现透明孔洞"><a href="#UIView实现透明孔洞" class="headerlink" title="UIView实现透明孔洞"></a><a name="alphaView" style="color:#000000;">UIView实现透明孔洞</a></h3><p>下面是实现效果图，右图红线是UIBezierPath路径，箭头表示路径方向，通常情况下路径方向没有什么作用，不过在做路劲绘制动画或者实现以下这种透明孔洞时显得很有用，只需要控制一下填充规则就可以实现这种效果。</p>
-<div>
-    <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227160537.png" style="zoom:50%;" />
-  ==>
-    <img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227160935.png" style="zoom:50%;" />
-</div>
+<h3 id="UIView实现透明孔洞"><a href="#UIView实现透明孔洞" class="headerlink" title="UIView实现透明孔洞"></a><a name="alphaView" style="color:#000000;">UIView实现透明孔洞</a></h3><img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227160537.png" style="zoom:50%;" />
+
+<p> 下图红线是UIBezierPath路径，箭头表示路径方向，通常情况下路径方向没有什么作用，不过在做路劲绘制动画或者实现以下这种透明孔洞时显得很有用，只需要控制一下填充规则就可以实现这种效果。</p>
+<img src="https://blog-nius.oss-cn-beijing.aliyuncs.com/images/20200227160935.png" style="zoom:50%;" />
+
+
 
 <p><font face="黑体" size=3 color=#86b300>填充规则</font>  CAShapeLayer有一个成员<code>fullRule</code>指定填充规则，只适用哪一种算法判断画布上的某一个区域是否属于该图形路径的<font face="黑体" size=3 color=#ff6600>内部</font>，对一个没有交叉的线框如矩形，要判断哪块区域是<font face="黑体" size=3 color=#ff6600>内部</font>比较直观。但对于一个复查交叉路径(比如自交或包含路径关系)就不太明确了，此时就需要一定的规则才行</p>
 <p><code>fullRule</code> 有两个值，<code>nonZero：非零</code> 和 <code>evenOdd：奇偶</code></p>
